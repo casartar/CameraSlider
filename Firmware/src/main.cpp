@@ -5,6 +5,8 @@
 #include <SPI.h>
 #include <Wire.h>
 
+#define SLIDER_LENGTH_MM 1000 // Slider has a length of 1 m
+
 // OLED
 #define OLED_RESET -1
 
@@ -37,14 +39,45 @@ long oldPosition = -999;
 #define ENDSTOP_PIN_LEFT 9
 #define ENDSTOP_PIN_RIGHT 10
 
+struct SpeedInfo
+{
+    const char *timeString;
+    float travelTime_s;
+};
+
+struct SpeedInfo speedInfo[] = {{"10s", 10.0f},
+                                {"20s", 20.0f},
+                                {"30s", 30.0f},
+                                {"1min", 60.0f},
+                                {"2min", (2.0f * 60.0f)},
+                                {"5min", (5.0f * 60.0f)},
+                                {"20min", (20.0f * 60.0f)},
+                                {"30min", (30.0f * 60.0f)},
+                                {"40min", (40.0f * 60.0f)},
+                                {"50min", (50.0f * 60.0f)},
+                                {"1h", (1.0f * 60.0f * 60.0f)},
+                                {"1,5h", (1.5f * 60.0f * 60.0f)},
+                                {"4h", (4.0f * 60.0f * 60.0f)},
+                                {"8h", (8.0f * 60.0f * 60.0f)},
+                                {"10h", (10.0f * 60.0f * 60.0f)}
+
+};
+
+enum STATES
+{
+    STATE_IDLE,
+    STATE_DRIVE_LEFT,
+    STATE_DRIVE_RIGHT
+};
+
+enum STATES state = STATE_IDLE;
+
 uint32_t DistanceToSteps(uint32_t distance_mm);
 
 void setup()
 {
     // OLED Init
     display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-    display.display();
-    delay(1000);
     display.clearDisplay();
     display.setTextColor(WHITE);
 
@@ -71,9 +104,9 @@ void loop()
             newPosition = 0;
             myEnc.write(newPosition * 4);
         }
-        else if (newPosition > 14)
+        else if (newPosition > (sizeof(speedInfo) / sizeof(speedInfo[0])) - 1)
         {
-            newPosition = 14;
+            newPosition = (sizeof(speedInfo) / sizeof(speedInfo[0]) - 1);
             myEnc.write(newPosition * 4);
         }
 
@@ -82,112 +115,59 @@ void loop()
         display.setTextSize(4);
         display.print(newPosition);
         display.print(" ");
+
         display.setTextSize(2);
-
-        float speed = 0;
-
-        switch (newPosition)
-        {
-        case 0:
-            // 10 Seconds
-            speed = (float)DistanceToSteps(1000) / 10.0f;
-            display.print("10s");
-            break;
-        case 1:
-            // 20 Seconds
-            speed = (float)DistanceToSteps(1000) / 20.0f;
-            display.print("20s");
-            break;
-        case 2:
-            // 30 Seconds
-            speed = (float)DistanceToSteps(1000) / 30.0f;
-            display.print("30s");
-            break;
-        case 3:
-            // 60 Seconds
-            speed = (float)DistanceToSteps(1000) / 60.0f;
-            display.print("1min");
-            break;
-        case 4:
-            // 2 Minutes
-            speed = (float)DistanceToSteps(1000) / (2.0f * 60.0f);
-            display.print("2min");
-            break;
-        case 5:
-            // 5 Minutes
-            speed = (float)DistanceToSteps(1000) / (5.0f * 60.0f);
-            display.print("5min");
-            break;
-        case 6:
-            // 20 Minutes
-            speed = (float)DistanceToSteps(1000) / (20.0f * 60.0f);
-            display.print("20min");
-            break;
-        case 7:
-            // 30 Minutes
-            speed = (float)DistanceToSteps(1000) / (30.0f * 60.0f);
-            display.print("30min");
-            break;
-        case 8:
-            // 40 Minutes
-            speed = (float)DistanceToSteps(1000) / (40.0f * 60.0f);
-            display.print("40min");
-            break;
-        case 9:
-            // 50 Minutes
-            speed = (float)DistanceToSteps(1000) / (50.0f * 60.0f);
-            display.print("50min");
-            break;
-        case 10:
-            // 1 Hour
-            speed = (float)DistanceToSteps(1000) / (1.0f * 60.0f * 60.0f);
-            display.print("1h");
-            break;
-        case 11:
-            // 1,5 Hours
-            speed = (float)DistanceToSteps(1000) / (1.5f * 60.0f * 60.0f);
-            display.print("1,5h");
-            break;
-        case 12:
-            // 4 Hours
-            speed = (float)DistanceToSteps(1000) / (4.0f * 60.0f * 60.0f);
-            display.print("4h");
-            break;
-        case 13:
-            // 8 Hours
-            speed = (float)DistanceToSteps(1000) / (8.0f * 60.0f * 60.0f);
-            display.print("8h");
-            break;
-        case 14:
-            // 10 Hours
-            speed = (float)DistanceToSteps(1000) / (10.0f * 60.0f * 60.0f);
-            display.print("10h");
-            break;
-
-        default:
-            break;
-        }
+        display.print(speedInfo[newPosition].timeString);
         display.display();
         display.clearDisplay();
-        stepper1.setMaxSpeed(speed);
-    }
-    if (digitalRead(BUTTON_PIN_DRIVE_LEFT) == LOW && (digitalRead(ENDSTOP_PIN_LEFT) == HIGH))
-    {
-        // Endstop is not activated - drive to the left is allowed
-        // Move 1 m to the left - But drive should be stopped by endstop
-        stepper1.move(DistanceToSteps(1000));
-    }
-    if (digitalRead(BUTTON_PIN_DRIVE_RIGHT) == LOW && !(digitalRead(ENDSTOP_PIN_RIGHT) == LOW))
-    {
-        // Endstop is not activated - drive to right is allowed
-        // Move 1 m to the right - But drive should be stopped by endstop
-        stepper1.move(-DistanceToSteps(1000));
+
+        // Speed in mm/s: Length of slider divided by the time the carriage should need to travel from one side to the
+        // other
+        stepper1.setMaxSpeed((float)DistanceToSteps(SLIDER_LENGTH_MM) / speedInfo[newPosition].travelTime_s);
     }
 
-    if (digitalRead(ENDSTOP_PIN_LEFT) == LOW || digitalRead(ENDSTOP_PIN_RIGHT) == LOW)
+    switch (state)
     {
-        stepper1.stop();
-        stepper1.setCurrentPosition(0);
+    case STATE_IDLE:
+        if (digitalRead(BUTTON_PIN_DRIVE_RIGHT) == LOW && (digitalRead(ENDSTOP_PIN_RIGHT) == HIGH))
+        {
+            // Endstop is not activated - drive to the left is allowed
+            // Move 1 m to the left - But drive should be stopped by endstop
+            stepper1.move(DistanceToSteps(1000));
+            state = STATE_DRIVE_RIGHT;
+        }
+        else if (digitalRead(BUTTON_PIN_DRIVE_LEFT) == LOW && !(digitalRead(ENDSTOP_PIN_LEFT) == LOW))
+        {
+            // Endstop is not activated - drive to right is allowed
+            // Move 1 m to the right - But drive should be stopped by endstop
+            stepper1.move(-DistanceToSteps(1000));
+            state = STATE_DRIVE_LEFT;
+        }
+        break;
+    case STATE_DRIVE_RIGHT:
+        if (digitalRead(ENDSTOP_PIN_RIGHT) == LOW || digitalRead(BUTTON_PIN_DRIVE_LEFT) == LOW)
+        {
+            stepper1.stop();
+            stepper1.setCurrentPosition(0);
+            state = STATE_IDLE;
+            // Wait until Button released
+            while (digitalRead(BUTTON_PIN_DRIVE_LEFT) == LOW)
+                ;
+            delay(200); // Debounce Button
+        }
+        break;
+    case STATE_DRIVE_LEFT:
+        if (digitalRead(ENDSTOP_PIN_LEFT) == LOW || digitalRead(BUTTON_PIN_DRIVE_RIGHT) == LOW)
+        {
+            stepper1.stop();
+            stepper1.setCurrentPosition(0);
+            state = STATE_IDLE;
+            // Wait until Button released
+            while (digitalRead(BUTTON_PIN_DRIVE_RIGHT) == LOW)
+                ;
+            delay(200); // Debounce Button
+        }
+        break;
     }
 
     stepper1.run();

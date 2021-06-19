@@ -1,0 +1,4 @@
+(fp_lib_table
+  (lib (name Arduino_Nano)(type KiCad)(uri ${KIPRJMOD}/Arduino_Nano)(options "")(descr ""))
+  (lib (name A4988_STEPPER_MOTOR_DRIVER_CARRIER)(type KiCad)(uri ${KIPRJMOD}/A4988_STEPPER_MOTOR_DRIVER_CARRIER)(options "")(descr ""))
+)

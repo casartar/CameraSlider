@@ -1256,7 +1256,7 @@
   (module A4988_STEPPER_MOTOR_DRIVER_CARRIER:MODULE_A4988_STEPPER_MOTOR_DRIVER_CARRIER (layer F.Cu) (tedit 60CE29BA) (tstamp 60CE3AF5)
     (at 154.94 134.62)
     (path /60D942D1)
-    (fp_text reference U2 (at -4.575 -11.135) (layer F.SilkS)
+    (fp_text reference U2 (at 6.985 11.43) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.015)))
     )
     (fp_text value A4988_STEPPER_MOTOR_DRIVER_CARRIER (at 18.285 11.065) (layer F.Fab)

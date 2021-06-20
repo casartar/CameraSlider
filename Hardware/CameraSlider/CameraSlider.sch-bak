@@ -742,4 +742,26 @@ Wire Wire Line
 	6600 2750 6850 2750
 Wire Wire Line
 	6600 2850 6850 2850
+$Comp
+L Mechanical:MountingHole H3
+U 1 1 60DF2B23
+P 1500 6500
+F 0 "H3" H 1600 6546 50  0000 L CNN
+F 1 "MountingHole" H 1600 6455 50  0000 L CNN
+F 2 "Mounting_Holes:MountingHole_3.2mm_M3_Pad" H 1500 6500 50  0001 C CNN
+F 3 "~" H 1500 6500 50  0001 C CNN
+	1    1500 6500
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H4
+U 1 1 60DF2EDB
+P 1500 6750
+F 0 "H4" H 1600 6796 50  0000 L CNN
+F 1 "MountingHole" H 1600 6705 50  0000 L CNN
+F 2 "Mounting_Holes:MountingHole_3.2mm_M3_Pad" H 1500 6750 50  0001 C CNN
+F 3 "~" H 1500 6750 50  0001 C CNN
+	1    1500 6750
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC

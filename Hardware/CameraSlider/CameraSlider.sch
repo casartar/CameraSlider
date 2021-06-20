@@ -710,13 +710,13 @@ Wire Wire Line
 $Comp
 L Connector:Conn_01x04_Male J11
 U 1 1 60CEF8B5
-P 9550 2150
-F 0 "J11" H 9522 2124 50  0000 R CNN
-F 1 "Conn_01x04_Male" H 9522 2033 50  0000 R CNN
-F 2 "Pin_Headers:Pin_Header_Angled_1x04_Pitch2.54mm" H 9550 2150 50  0001 C CNN
-F 3 "~" H 9550 2150 50  0001 C CNN
-	1    9550 2150
-	-1   0    0    -1  
+P 9550 2250
+F 0 "J11" H 9522 2224 50  0000 R CNN
+F 1 "Conn_01x04_Male" H 9522 2133 50  0000 R CNN
+F 2 "Pin_Headers:Pin_Header_Angled_1x04_Pitch2.54mm" H 9550 2250 50  0001 C CNN
+F 3 "~" H 9550 2250 50  0001 C CNN
+	1    9550 2250
+	-1   0    0    1   
 $EndComp
 Wire Wire Line
 	9150 1750 9400 1750

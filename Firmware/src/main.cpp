@@ -82,6 +82,7 @@ void setup()
     display.setTextColor(WHITE);
 
     // Stepper Init
+    stepper1.setPinsInverted(false, false, true);
     stepper1.setEnablePin(STEPPER_PIN_ENABLE);
     stepper1.setAcceleration(1000.0);
 
